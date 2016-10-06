@@ -1,0 +1,8 @@
+# Site settings
+title: Liquid Lunch
+description: Personal blog for Brian Mooney
+keywords: Blogging, Mooney, Software Development, Geneology
+author: irishshagua
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "" # the base hostname & protocol for your site
+future: true
