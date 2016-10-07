@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<article class="post-container post-container--single">
+  <header class="post-header">
+    <div class="post-meta">
+      {% if page.pinned != true %}
+        <time datetime="{{ page.date | date: "%-d %b %Y" }}" class="post-meta__date date">{{ page.date | date: "%-d %b %Y" }}</time>
+      {% endif %}
+      <span class="post-meta__tags">{% for tag in page.tags %}<a href="{{ site.baseurl }}tags/#{{ tag }}">{{ tag }}</a> {% endfor %}</span>
+    </div>
+    <h1 class="post-title">{{ page.title }}</h1>
+    {% if page.image %}
+      <img src="{% unless page.image contains 'http' %}{{ site.baseurl }}{% endunless %}{{ page.image }}"/>
+    {% endif %}
+  </header>
+
+  <section class="post">
+    {{ content }}
+  </section>
+  {% if page.comments != false and site.disqus_shortname %}<section id="disqus_thread"></section><!-- /#disqus_thread -->{% endif %}
+</article>
+{% if page.comments != false %}{% include disqus.html %}{% endif %}

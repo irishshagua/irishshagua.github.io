@@ -1,8 +1,42 @@
 # Site settings
 title: Liquid Lunch
-description: Personal blog for Brian Mooney
-keywords: Blogging, Mooney, Software Development, Geneology
-author: irishshagua
-baseurl: "" # the subpath of your site, e.g. /blog/
-url: "" # the base hostname & protocol for your site
+description: 'Blog and general brain dump for Brian Mooney'
+url: ''
+baseurl: '/'
+google_analytics: 'UA-85365627-1'
+# disqus_shortname: 'liquidLunchBlog' # Not Working. Need to investigate
+
+# Enable Pinning of specific blog posts
 future: true
+
+author:
+  name: Brian Mooney
+  email: brian_satchwannabe@hotmail.com
+  twitter_username: irishshagua
+  facebook_username: brian.mooney.7906
+  github_username:  irishshagua
+  linkedin_username:  brian-mooney-7aa52013
+
+defaults:
+  -
+    scope:
+      path: ''
+      type: 'posts'
+    values:
+        layout: 'post'
+
+# Build settings
+destination: _site
+paginate: 10
+permalink: /:year/:title/
+markdown: kramdown
+highlighter: rouge
+
+kramdown:
+  # use Github Flavored Markdown
+  input: GFM
+  # do not replace newlines by <br>s
+  hard_wrap: false
+
+gems: ['jekyll-paginate']
+exclude: ['README.md', 'Gemfile', 'Gemfile.lock']

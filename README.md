@@ -6,4 +6,4 @@ two minutes on GitHub and anything else which crosses my mind... :)
 
 
 ## Attributions
-The site is based off of this tempalte [Modern Blog](https://github.com/inded/Jekyll_modern-blog) because I'm fuckin useless at any kind of design or prettyness.
+The site is based off of this template [Jekyll Uno](https://github.com/joshgerdes/jekyll-uno) because I'm fuckin useless at any kind of design or prettyness.

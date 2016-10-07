@@ -1,11 +1,9 @@
 ---
 title:  Photography
-subtitle: Random snappings that I've taken
-author: irishshagua
-avatar: img/authors/irishshagua.jpg
-image: img/photography/hiddenRose.jpg
 pinned: true
+categories: [photography]
+tags: [photography, gallery]
+image: images/photography.jpg
 ---
 
-### Header
-Body
+Every now and again I get it into my head that I can take pictures. And before the kids came along, I used to be able to get out and actually try and take a few snaps. Mostly all I take pictures of now is spending time with the kids but I imagine I will get back into photography at some stage in the future. In any case, here are a few of the pictures that I have taken so far.
