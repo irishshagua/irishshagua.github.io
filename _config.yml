@@ -1,7 +1,7 @@
 # Site settings
 title: Liquid Lunch
 description: 'Blog and general brain dump for Brian Mooney'
-url: ''
+url: 'https://irishshagua.github.io'
 baseurl: '/'
 google_analytics: 'UA-85365627-1'
 disqus_shortname: 'liquidlunchblog'
