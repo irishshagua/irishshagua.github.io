@@ -4,7 +4,7 @@ description: 'Blog and general brain dump for Brian Mooney'
 url: ''
 baseurl: '/'
 google_analytics: 'UA-85365627-1'
-# disqus_shortname: 'liquidLunchBlog' # Not Working. Need to investigate
+disqus_shortname: 'liquidlunchblog'
 
 # Enable Pinning of specific blog posts
 future: true
