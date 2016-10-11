@@ -64,4 +64,4 @@ To actually build up the tree I looked at a couple of different tools. Because w
 [Thomas Mooney Guinness Post Mortem]: /images/familyHistory/thomasMooneyPostMortemReportGuinness.jpg
 [Simon Mooney Census]: /images/familyHistory/simonMooneyCensus.png
 [Ancestry DNA Analysis]: /images/familyHistory/ancestryDnaAnalysis.png
-[Sample Family Tree]: /images/familyHistory/samplefamilyTree.png
+[Sample Family Tree]: /images/familyHistory/sampleFamilyTree.png
