@@ -1,6 +1,5 @@
 ---
 title:  Family History
-pinned: true
 categories: [geneology]
 tags: [geneology, family tree, photography]
 image: images/familyHistoryCensus.png

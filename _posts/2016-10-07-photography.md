@@ -1,6 +1,5 @@
 ---
 title:  Photography
-pinned: true
 categories: [photography]
 tags: [photography, gallery]
 image: images/photography.jpg

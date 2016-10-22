@@ -1,7 +1,6 @@
 ---
 title:  Falling Between Projects
 image: http://www.kuder.com/wp-content/uploads/2014/07/frustration-at-work1-400x240.jpg
-pinned: false
 categories: [tech]
 tags: [work, scala, java, docker, github, jekyll]
 ---
