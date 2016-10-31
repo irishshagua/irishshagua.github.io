@@ -38,6 +38,6 @@ kramdown:
   # do not replace newlines by <br>s
   hard_wrap: false
 
-gems: ['jekyll-paginate', 'jemoji']
+gems: ['jekyll-paginate', 'jemoji', 'jekyll-time-to-read']
 exclude: ['README.md', 'Gemfile', 'Gemfile.lock']
 include: [_pages]
