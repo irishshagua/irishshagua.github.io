@@ -2,7 +2,7 @@
 title:  NodeJs v Java IO Comparison
 image: https://i.ytimg.com/vi/2XtJV2bQjQQ/hqdefault.jpg
 categories: [tech]
-tags: [NodeJs, Java, Performance]
+tags: [nodejs, java, performance]
 ---
 
 A colleague in work recently did a '*lunch and learn*' around, how as a development department, we have become too _**enterprisey**_... The definition of *enterprisey* was basically that we are too slow to deliver smaller services which act as a glue for some of the larger projects that we work on. Stuff like simple CRUD or config services. I agreed with a lot of what he said around trying to be more lean while delivering these things, and while a lot of the problems which slow a dev team, or even a single developer, from delivering these important but often small and relatively trivial projects are out of the control of the developers (I'm thinking environment provisioning, security auditing, monitoring and prod support agreements), many things that we do could be a lot simpler. 
