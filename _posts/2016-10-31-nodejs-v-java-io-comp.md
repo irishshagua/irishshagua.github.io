@@ -93,6 +93,7 @@ But it is possible to setup the same kind of async server using Java libs like t
 ### The Results
 So how do the apps stack up against each other? Actually, they were pretty close in terms of performance. Bearing in mind that these are both extremely simplistic apps and could both probably be optimised, I think it's a fair conclusion to draw from the below results that the initial statement NodeJS would blow that Java out of the water was a bit premature. It is very possible to write asynchronous code which runs on the JVM, and hopefully the code ([which is available on github]) shows that it is not particularly difficult to do that. The results below are so close that it is nearly negligible to declare a winner. The same worker thread delegation can be achieved in both languages so it really comes down to experience, preference etc.. as to which you should choose.
 
+{: .table .table-striped}
 | Request        |  Avg Resp Time (ms) | Min REsp Time (ms) | Max Resp Time (ms) | Throughput (req/s) | Avg Payload Size (Bytes) |
 | ---------------|:-------------------:|:------------------:|:------------------:|:------------------:|:------------------------:|
 | Landing Page   | 35                  | 9                  | 156                | 291.5              | 222                      |
@@ -102,6 +103,7 @@ So how do the apps stack up against each other? Actually, they were pretty close
 
 **_Node Results_**
 
+{: .table .table-striped}
 | Request        |  Avg Resp Time (ms) | Min REsp Time (ms) | Max Resp Time (ms) | Throughput (req/s) | Avg Payload Size (Bytes) |
 | ---------------|:-------------------:|:------------------:|:------------------:|:------------------:|:------------------------:|
 | Landing Page   | 24                  | 9                  | 127                | 313                | 116                      |
