@@ -20,7 +20,8 @@ Using a simple jmeter script we will test each of the calls a number of times fo
 
 ### The Test Enviornment
 To try and validate which app performed better I wanted the test to be as fair as possible. By running the app server inside of an EC2 isntance on AWS I could at least guarantee that there was nothing running on my laptop which would spoil the results. And seeing as the app server was in the :cloud:, it only made sense to host the DB there too... This gave me an opportunity to try out [Amazon RDS] whcih was pretty cool. In the space of a few minutes I had a MySQL DB (well it was actually an Amazon Aurora DB, but I think it's basically MySQL) up and waiting for some requests. I created a very simple schema with only one table:
-   
+
+```sql   
     CREATE TABLE `pub` ( 
          `id` int(11) NOT NULL AUTO_INCREMENT, 
          `name` varchar(40) NOT NULL,  
@@ -29,6 +30,7 @@ To try and validate which app performed better I wanted the test to be as fair a
          `review` varchar(1000) NOT NULL,  
           PRIMARY KEY (`id`)  
     ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1
+```
 
 The UI for RDS is actually pretty cool. You get simple monitoring and metrics out of the box. The only difficult part was getting access between the DB and the app server, but this was down to my own rushed stupidity. I hadn't built them in the same VPC so couldn't give access to the security group which the app server resided in. One quick re-create of the VM (and a few pennys extra into Amazons coffers) and we were ready to rock.
 
@@ -47,6 +49,7 @@ Before going into the details of the apps it's probably a good idea to give a bi
 To start with a compliment, the [NodeJS version] of the app is definitely more concise than the [Java version]. At only 49 lines of code, it's possible to get a very basic app which can serve traffic from the DB. Compared to Javas 93 lines, it's pretty much half the code. Although both could be wrote in less, it was really the intent here. It does seem fair to highlight that whatever you write in Node, it's probably gonna be less verbose than the Java equivalent. We'll save the comparisons between alternate JVM langs for a different post...
 The Node app is made up of only two files, seperated by responsibility. One is responsible for serving the HTTP traffic and the other is responsible for the data access. You can see from the below snippet how simple it is to actually instantiate a server using one of the *many* libs available.
 
+```javascript
     var express = require('express');
     var app = express();
     var dao = require('./dao');
@@ -60,12 +63,14 @@ The Node app is made up of only two files, seperated by responsibility. One is r
     var server = app.listen(8080, function () {
       console.log("App started. Listening on http://localhost:8080");
     });
- 
+```
+
  **_NodeJS Server Snippet_**
 
 But it is possible to setup the same kind of async server using Java libs like the wonderful [Undertow]. To try and stay consistant across the two apps, I've split them the exact same so there are two Java classes, one responsible for serving HTTP requests and the other responsible for DB access. The only difference is that the model for the Java app lives in a seperate file. This is obviously a benefit of every object already existing as JSON in JS land.
 
-    public static void main(String... args) {
+```java
+public static void main(String... args) {
       PathTemplateHandler handler = new PathTemplateHandler();
 
       handler.add("/pubs", Server::getAllPubs);
@@ -87,13 +92,13 @@ But it is possible to setup the same kind of async server using Java libs like t
         });
       }
     }
- 
+```
+
  **_Java Server Snippet_**
 
 ### The Results
 So how do the apps stack up against each other? Actually, they were pretty close in terms of performance. Bearing in mind that these are both extremely simplistic apps and could both probably be optimised, I think it's a fair conclusion to draw from the below results that the initial statement NodeJS would blow that Java out of the water was a bit premature. It is very possible to write asynchronous code which runs on the JVM, and hopefully the code ([which is available on github]) shows that it is not particularly difficult to do that. The results below are so close that it is nearly negligible to declare a winner. The same worker thread delegation can be achieved in both languages so it really comes down to experience, preference etc.. as to which you should choose.
 
-{: .table .table-striped}
 | Request        |  Avg Resp Time (ms) | Min REsp Time (ms) | Max Resp Time (ms) | Throughput (req/s) | Avg Payload Size (Bytes) |
 | ---------------|:-------------------:|:------------------:|:------------------:|:------------------:|:------------------------:|
 | Landing Page   | 35                  | 9                  | 156                | 291.5              | 222                      |
