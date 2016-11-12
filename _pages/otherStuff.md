@@ -4,4 +4,9 @@ permalink: /stuff/
 layout: page
 ---
 
-Placeholder. To be populated with something interesting...
+Below is a list of tidbits and projects that I work on...
+
+ * [Dublin Pubs]
+
+<!-- Web Links -->
+[Dublin Pubs]: {{ site.url }}/stuff/pubs/
