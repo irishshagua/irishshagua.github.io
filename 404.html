@@ -1,0 +1,45 @@
+---
+permalink: /404.html
+---
+
+<html>
+  <head>
+    <link rel="stylesheet" href="css/jquery.terminal.min.css"></script>
+        
+    <script src="js/terminal/js/jquery.min.js"></script>
+    <script src="js/terminal/js/jquery.terminal.min.js"></script>
+  </head>
+
+  <body id="term" class="terminal">
+    <script>    
+      var termHeader = "The {{ site.title }} site located here {{ site.url }} returned a 404 for this url" + 
+        "\nUse the `help` command to see your available options\n\n";
+
+      $('#term').terminal(function(command, term) {
+        if (command == 'help') {
+          term.echo("Below are a list of the supported commands:\n\n" +
+          	"\t+ clear: Clear the Screen\n" + 
+          	"\t+ home: Return To Main Page\n" +
+          	"\t+ posts: Show links to all posts");
+        } else if (command == 'home') {
+          window.location.href = '{{ site.url }}';
+          term.echo("Returning to Home Page...");
+          term.set_prompt("");
+        } else if (command == "posts") {
+          {% for page in site.posts %}
+            term.echo("{{ site.url }}{{ page.url }}");
+          {% endfor %}	
+        } else if (command == "") {
+        	term.echo("");
+        } else {
+          term.error('Illegal Command [' + command + ']:\n\tUse `help` command to list your options');
+        }
+      }, 
+      {   
+        prompt: '$: ', 
+        greetings: termHeader,
+        name: '404 Terminal',
+      });
+    </script>
+  </body>
+</html>
