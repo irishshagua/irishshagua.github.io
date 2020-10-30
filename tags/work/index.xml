@@ -6,7 +6,16 @@
     <description>Recent content in work on IrishShaGua (傻瓜) Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 04 Feb 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://irishshagua.github.io/tags/work/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://irishshagua.github.io/tags/work/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dockerised Project Builds</title>
+      <link>https://irishshagua.github.io/2020/10/dockerised-project-builds/</link>
+      <pubDate>Fri, 30 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://irishshagua.github.io/2020/10/dockerised-project-builds/</guid>
+      <description>Relaunching the blog</description>
+    </item>
+    
     <item>
       <title>JVM Benchmarking</title>
       <link>https://irishshagua.github.io/2017/02/jvm-benchmarking/</link>
