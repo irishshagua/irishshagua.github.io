@@ -6,7 +6,16 @@
     <description>Recent content on IrishShaGua (傻瓜) Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 30 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://irishshagua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 06 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://irishshagua.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dynamic Site Features</title>
+      <link>https://irishshagua.github.io/2020/11/dynamic-site-features/</link>
+      <pubDate>Fri, 06 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://irishshagua.github.io/2020/11/dynamic-site-features/</guid>
+      <description>Adding dynamic features to a static GitHub pages site</description>
+    </item>
+    
     <item>
       <title>Dockerised Project Builds</title>
       <link>https://irishshagua.github.io/2020/10/dockerised-project-builds/</link>
@@ -77,6 +86,16 @@
       
       <guid>https://irishshagua.github.io/2016/10/falling-between-projects/</guid>
       <description>The first post of the new blog&amp;hellip; :)</description>
+    </item>
+    
+    <item>
+      <title>Side Projects</title>
+      <link>https://irishshagua.github.io/projects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://irishshagua.github.io/projects/</guid>
+      <description>Below are some long-running side projects&amp;hellip;
+ Project 1 Project 2 Project 3  Some more blurb&amp;hellip; yadda yadda&amp;hellip;</description>
     </item>
     
   </channel>
