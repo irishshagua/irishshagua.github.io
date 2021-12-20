@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <script type="application/ld+json">
+
+{  
+  "@context":"http://schema.org",
+  "@type":"Website",
+  "@id":"https:\/\/irishshagua.github.io\/",
+  "author": {
+    "@type": "Person",
+    "name": "Brian Mooney",
+    
+    "image": "https://www.gravatar.com/avatar/2cd392436367f45246c3532b8fe0ebc1"
+    
+  },
+  "name":"IrishShaGua (傻瓜) Blog",
+  "description":"An issue with distributed PubSub in Akka",
+  "url":"https:\/\/irishshagua.github.io\/2016\/11\/dealing-with-pubsub-in-akka\/",
+  "keywords":"[]"
+}
+
+</script>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.91.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="Brian Mooney">
+<meta name="keywords" content="">
+<meta name="description" content="An issue with distributed PubSub in Akka">
+
+
+<meta property="og:description" content="An issue with distributed PubSub in Akka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dealing with PubSub in Akka">
+<meta name="twitter:title" content="Dealing with PubSub in Akka">
+<meta property="og:url" content="https://irishshagua.github.io/2016/11/dealing-with-pubsub-in-akka/">
+<meta property="twitter:url" content="https://irishshagua.github.io/2016/11/dealing-with-pubsub-in-akka/">
+<meta property="og:site_name" content="IrishShaGua (傻瓜) Blog">
+<meta property="og:description" content="An issue with distributed PubSub in Akka">
+<meta name="twitter:description" content="An issue with distributed PubSub in Akka">
+<meta property="og:locale" content="en-us">
+
+
+<meta property="article:published_time" content="2016-11-28T00:00:00">
+
+
+<meta property="article:modified_time" content="2016-11-28T00:00:00">
+
+
+
+
+
+<meta property="article:tag" content="work">
+
+<meta property="article:tag" content="scala">
+
+<meta property="article:tag" content="akka">
+
+
+
+
+<meta name="twitter:card" content="summary">
+
+<meta name="twitter:site" content="@irishshagua">
+
+
+<meta name="twitter:creator" content="@irishshagua">
+
+
+
+
+
+
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1604006341/blog/AkkaPubSub/AkkaDistributedPubSub_lndom2.png">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1604006341/blog/AkkaPubSub/AkkaDistributedPubSub_lndom2.png">
+
+
+    <title>Dealing with PubSub in Akka</title>
+
+    <link rel="icon" href="https://irishshagua.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://irishshagua.github.io/2016/11/dealing-with-pubsub-in-akka/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    
+    
+    <link rel="stylesheet" href="https://irishshagua.github.io/css/style-h6ccsoet3mzkbb0wngshlfbaweimexgqcxj0h5hu4h82olsdzz6wmqdkajm.min.css" />
+    
+    
+
+    
+      
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VXD66JJQX9"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-VXD66JJQX9', { 'anonymize_ip': false });
+}
+</script>
+
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://irishshagua.github.io/" aria-label="Go to homepage">IrishShaGua (傻瓜) Blog</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://irishshagua.github.io/#about" aria-label="Open the link: /#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://www.gravatar.com/avatar/2cd392436367f45246c3532b8fe0ebc1?s=90" alt="Author&#39;s picture" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://irishshagua.github.io/#about" aria-label="Read more about the author">
+          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/2cd392436367f45246c3532b8fe0ebc1?s=110" alt="Author&#39;s picture" />
+        </a>
+        <h4 class="sidebar-profile-name">Brian Mooney</h4>
+        
+          <h5 class="sidebar-profile-bio">A software engineer currently working with <a href="https://engineering.zalando.com/">Zalando</a>. This blog is just a collection of thoughts and random shite&hellip;</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/" title="Blog">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">Blog</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/hobbies" title="Side Projects">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-cogs"></i>
+      
+      <span class="sidebar-button-desc">Side Projects</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/tags" title="Tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">Tags</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/#about" title="About">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">About</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/dublin-pubs-map" title="Dublin Pubs">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-beer"></i>
+      
+      <span class="sidebar-button-desc">Dublin Pubs</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/irishshagua" target="_blank" rel="noopener" title="GitHub">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://twitter.com/irishshagua" target="_blank" rel="noopener" title="Twitter">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-twitter"></i>
+      
+      <span class="sidebar-button-desc">Twitter</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://res.cloudinary.com/irishshagua/image/upload/v1604006341/blog/AkkaPubSub/AkkaDistributedPubSub_lndom2.png')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title">
+      Dealing with PubSub in Akka
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time datetime="2016-11-28T00:00:00Z">
+        
+  November 28, 2016
+
+      </time>
+    
+    
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               hasCoverCaption">
+        <article class="post" id="top">
+          
+            <span class="post-header-cover-caption caption">Akka PubSub</span>
+          
+          
+          <div class="post-content markdown">
+            <div class="main-content-wrap">
+              <p>One of the projects that I was working on recently required a solution which fell very nicely into a publish subscribe type solution. I was using Akka, and needed many actors of one type to listen to a change in an actor of another type. A quick google showed that Akka offered a <a href="http://doc.akka.io/docs/akka/current/scala/distributed-pub-sub.html">Distributed PubSub</a> actor out of the box. I wanted to do a quick prototype to see if it would fit the problem that I was trying to use it for.</p>
+<h2 id="requirements">Requirements</h2>
+<p>Using Akka Sharding, multiple actors who would need to listen for the changes (the subscribers) and would be distributed across many nodes in a cluster. The DistributedPubSub mediator extension creates a single actor in each node which act as a relay for all published messages. A publisher will send a message to the mediator which will then forward the message to all subscribed actors within the node and to the mediators in each of the other nodes for distribution to the remote actors. As there was a large number of subscribers, and there would possibly be large periods of quiet time (i.e. no messages of interest being published), the subscribing actors would be passivated. What needed to be established was whether or not the mediator would act the same with passivated actors.</p>
+<h2 id="setup">Setup</h2>
+<p>To model the problem we need a publisher which would be responsible for broadcasting the message:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala">    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PublisherActor</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">Actor</span> <span style="color:#66d9ef">with</span> <span style="color:#a6e22e">ActorLogging</span> <span style="color:#f92672">{</span>
+      log<span style="color:#f92672">.</span>info<span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;Publisher </span><span style="color:#e6db74">${</span>self<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74"> actor instance created&#34;</span><span style="color:#f92672">)</span>
+
+      <span style="color:#66d9ef">val</span> mediator <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">DistributedPubSub</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span>system<span style="color:#f92672">).</span>mediator
+
+      <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">def</span> receive<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Receive</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">case</span> event<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">UpdateableEvent</span> <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">{</span>
+          log<span style="color:#f92672">.</span>info<span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;</span><span style="color:#e6db74">$event</span><span style="color:#e6db74"> to be routed to all listeners&#34;</span><span style="color:#f92672">)</span>
+          mediator <span style="color:#f92672">!</span> <span style="color:#a6e22e">Publish</span><span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;Publisher-</span><span style="color:#e6db74">${</span>self<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">,</span> event<span style="color:#f92672">)</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>And a subscriber. The subscriber extends PersistentActor to enable passivation during quiet periods. In this instance the actor will go to sleep after 20 seconds of inactivity:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala">    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SubscribingActor</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">PersistentActor</span> <span style="color:#66d9ef">with</span> <span style="color:#a6e22e">ActorLogging</span> <span style="color:#f92672">{</span>
+
+      <span style="color:#66d9ef">var</span> state<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubscriberState</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">SubscriberState</span><span style="color:#f92672">(</span>subscribedPublisher <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">None</span><span style="color:#f92672">)</span>
+      <span style="color:#66d9ef">val</span> mediator <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">DistributedPubSub</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span>system<span style="color:#f92672">).</span>mediator
+
+      context<span style="color:#f92672">.</span>setReceiveTimeout<span style="color:#f92672">(</span><span style="color:#ae81ff">20</span> seconds<span style="color:#f92672">)</span>
+
+      <span style="color:#66d9ef">def</span> updateSubscriberState<span style="color:#f92672">(</span>publisher<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">UpdateableEvent</span><span style="color:#f92672">)</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubscriberState</span> <span style="color:#f92672">=</span>
+        state<span style="color:#f92672">.</span>copy<span style="color:#f92672">(</span>subscribedPublisher <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">Some</span><span style="color:#f92672">(</span>publisher<span style="color:#f92672">.</span>id<span style="color:#f92672">))</span>
+
+      <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">def</span> receiveCommand<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Receive</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">case</span> event<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">UpdateableEvent</span> <span style="color:#f92672">=&gt;</span> persist<span style="color:#f92672">(</span>event<span style="color:#f92672">)</span> state <span style="color:#66d9ef">=</span> 
+          updateSubscriberState<span style="color:#f92672">(</span>event<span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">case</span> subscription<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Subscription</span> <span style="color:#f92672">=&gt;</span> 
+          mediator <span style="color:#f92672">!</span> <span style="color:#a6e22e">Subscribe</span><span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;Publisher-</span><span style="color:#e6db74">${</span>subscription<span style="color:#f92672">.</span>publisherId<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">,</span> self<span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">SubscribeAck</span><span style="color:#f92672">(</span><span style="color:#a6e22e">Subscribe</span><span style="color:#f92672">(</span>subscribedTopic<span style="color:#f92672">,</span> group<span style="color:#f92672">,</span> subscribee<span style="color:#f92672">))</span> <span style="color:#66d9ef">⇒</span> noop
+        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ReceiveTimeout</span> <span style="color:#66d9ef">=&gt;</span> context<span style="color:#f92672">.</span>stop<span style="color:#f92672">(</span>self<span style="color:#f92672">)</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>To control the test, a simple REST interface was placed in front of these actors. This would enable control around when messages were published. The full code for this can be found on <a href="https://github.com/irishshagua/akka-distributed-pub-sub-testing">github</a>.</p>
+<h2 id="execution">Execution</h2>
+<p>Testing was quite simple. Using a curl request, create a Subscriber.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -d @subscription.json 127.0.0.1:8080/subscriber
+</code></pre></div><p>Before the subscriber is passivated, publish an event and make sure that the subscriber received the event.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -d @updateableEvent.json 127.0.0.1:8080/publisher
+</code></pre></div><p>And then after the subscriber was passivated, resubmit the event and see if the subscriber was awoken to process the
+event.</p>
+<h2 id="results">Results</h2>
+<p>Unfortunately as can be seen from the logs below, the mediator seems to only hold a reference to the current actor path
+and therefore, the event which is published after the actor is passivated does not wake the sleeping subscriber from its
+slumber&hellip; :disappointed:</p>
+<pre><code>  15:06:23.259 c.m.a.SubscribingActor - Subscriber-1234567 actor instance created
+  15:06:23.262 c.m.a.SubscribingActor - Subscriber-1234567 is subscribing to 7654321
+  15:06:23.268 c.m.a.SubscribingActor - Actor[akka://PubSubTestSystem/system/sharding/SubscriberShard/21/1234567#1516056761] is subscribed to Publisher-7654321
+  15:06:31.085 c.m.a.PublisherActor - Publisher 7654321 actor instance created
+  15:06:31.086 c.m.a.PublisherActor - UpdateableEvent(7654321,40.5) to be routed to all listeners
+  15:06:31.090 c.m.a.SubscribingActor - Applying UpdateableEvent(7654321,40.5) to Subscriber-1234567
+  15:06:51.107 c.m.a.SubscribingActor - Subscriber-1234567 is going to sleep now
+  15:07:01.704 c.m.a.PublisherActor - UpdateableEvent(7654321,40.5) to be routed to all listeners
+  15:07:01.704 a.a.LocalActorRef - Message [com.mooneyserver.akkapubsub.UpdateableEvent] from Actor[akka://PubSubTestSystem/system/sharding/PublisherShard/21/7654321#65243080] to Actor[akka://PubSubTestSystem/system/sharding/SubscriberShard/21/1234567#1516056761] was not delivered. [3] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'
+</code></pre>
+<!-- raw HTML omitted -->
+
+              
+
+
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://irishshagua.github.io/tags/work/">work</a>
+
+  <a class="tag tag--primary tag--small" href="https://irishshagua.github.io/tags/scala/">scala</a>
+
+  <a class="tag tag--primary tag--small" href="https://irishshagua.github.io/tags/akka/">akka</a>
+
+                  </div>
+                
+              
+            
+            
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://irishshagua.github.io/2017/01/jenkins-pipeline/" data-tooltip="Jenkins Pipeline" aria-label="NEXT: Jenkins Pipeline">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://irishshagua.github.io/2016/10/nodejs-v-java-io-comparison/" data-tooltip="NodeJs v Java IO Comparison" aria-label="PREVIOUS: NodeJs v Java IO Comparison">
+          
+              <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://irishshagua.github.io/2016/11/dealing-with-pubsub-in-akka/" title="Share on Twitter" aria-label="Share on Twitter">
+          <i class="fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="Back to top">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+            
+  
+
+
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 Brian Mooney. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://irishshagua.github.io/2017/01/jenkins-pipeline/" data-tooltip="Jenkins Pipeline" aria-label="NEXT: Jenkins Pipeline">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://irishshagua.github.io/2016/10/nodejs-v-java-io-comparison/" data-tooltip="NodeJs v Java IO Comparison" aria-label="PREVIOUS: NodeJs v Java IO Comparison">
+          
+              <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://irishshagua.github.io/2016/11/dealing-with-pubsub-in-akka/" title="Share on Twitter" aria-label="Share on Twitter">
+          <i class="fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="Back to top">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+      </div>
+      
+<div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-times"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Firishshagua.github.io%2F2016%2F11%2Fdealing-with-pubsub-in-akka%2F" aria-label="Share on Twitter">
+          <i class="fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+
+
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-times"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://www.gravatar.com/avatar/2cd392436367f45246c3532b8fe0ebc1?s=110" alt="Author&#39;s picture" />
+    
+    <h4 id="about-card-name">Brian Mooney</h4>
+    
+      <div id="about-card-bio">A software engineer currently working with <a href="https://engineering.zalando.com/">Zalando</a>. This blog is just a collection of thoughts and random shite&hellip;</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Software Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker-alt"></i>
+        <br/>
+        Dublin, Ireland
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/irishshagua/image/upload/v1604004625/blog/cliffs_of_moher_elezul.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js" integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="https://irishshagua.github.io/js/script-yqzy9wdlzix4lbbwdnzvwx3egsne77earqmn73v9uno8aupuph8wfguccut.min.js"></script>
+
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+
+
+    
+  </body>
+</html>
+

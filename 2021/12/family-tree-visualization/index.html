@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <script type="application/ld+json">
+
+{  
+  "@context":"http://schema.org",
+  "@type":"Website",
+  "@id":"https:\/\/irishshagua.github.io\/",
+  "author": {
+    "@type": "Person",
+    "name": "Brian Mooney",
+    
+    "image": "https://www.gravatar.com/avatar/2cd392436367f45246c3532b8fe0ebc1"
+    
+  },
+  "name":"IrishShaGua (傻瓜) Blog",
+  "description":"Family Tree Visualized with D3 JavaScript Library",
+  "url":"https:\/\/irishshagua.github.io\/2021\/12\/family-tree-visualization\/",
+  "keywords":"[]"
+}
+
+</script>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.91.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="Brian Mooney">
+<meta name="keywords" content="">
+<meta name="description" content="Family Tree Visualized with D3 JavaScript Library">
+
+
+<meta property="og:description" content="Family Tree Visualized with D3 JavaScript Library">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Family Tree Visualization">
+<meta name="twitter:title" content="Family Tree Visualization">
+<meta property="og:url" content="https://irishshagua.github.io/2021/12/family-tree-visualization/">
+<meta property="twitter:url" content="https://irishshagua.github.io/2021/12/family-tree-visualization/">
+<meta property="og:site_name" content="IrishShaGua (傻瓜) Blog">
+<meta property="og:description" content="Family Tree Visualized with D3 JavaScript Library">
+<meta name="twitter:description" content="Family Tree Visualized with D3 JavaScript Library">
+<meta property="og:locale" content="en-us">
+
+
+<meta property="article:published_time" content="2021-12-20T00:00:00">
+
+
+<meta property="article:modified_time" content="2021-12-20T00:00:00">
+
+
+
+
+
+<meta property="article:tag" content="hobbies">
+
+<meta property="article:tag" content="geneology">
+
+<meta property="article:tag" content="work">
+
+
+
+
+<meta name="twitter:card" content="summary">
+
+<meta name="twitter:site" content="@irishshagua">
+
+
+<meta name="twitter:creator" content="@irishshagua">
+
+
+
+
+
+
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640002449/blog/family-history/MellifontDroghedaToLiverpool_nps0v7.jpg">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640002449/blog/family-history/MellifontDroghedaToLiverpool_nps0v7.jpg">
+
+
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/LifeOnTheFarm_obkwz8.jpg">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/LifeOnTheFarm_obkwz8.jpg">
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/DadHippy_drlepb.png">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/DadHippy_drlepb.png">
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000848/blog/family-history/SeamusMooney_ntdgzm.png">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000848/blog/family-history/SeamusMooney_ntdgzm.png">
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1604005462/blog/family-history/familyHistoryCensus_cjudvr.png">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1604005462/blog/family-history/familyHistoryCensus_cjudvr.png">
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000399/blog/family-history/FamilyTreeVisualization_j3ne96.png">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000399/blog/family-history/FamilyTreeVisualization_j3ne96.png">
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/PegMooneyOnLeft_y9c3er.jpg">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/PegMooneyOnLeft_y9c3er.jpg">
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/KoreanWar_hvosny.png">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/KoreanWar_hvosny.png">
+
+<meta property="og:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/MartianAndKathleenAndWillieCorcoranAndBridgetteTanner_bpha7o.jpg">
+<meta property="twitter:image" content="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/MartianAndKathleenAndWillieCorcoranAndBridgetteTanner_bpha7o.jpg">
+
+
+    <title>Family Tree Visualization</title>
+
+    <link rel="icon" href="https://irishshagua.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://irishshagua.github.io/2021/12/family-tree-visualization/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    
+    
+    <link rel="stylesheet" href="https://irishshagua.github.io/css/style-h6ccsoet3mzkbb0wngshlfbaweimexgqcxj0h5hu4h82olsdzz6wmqdkajm.min.css" />
+    
+    
+
+    
+      
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VXD66JJQX9"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-VXD66JJQX9', { 'anonymize_ip': false });
+}
+</script>
+
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://irishshagua.github.io/" aria-label="Go to homepage">IrishShaGua (傻瓜) Blog</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://irishshagua.github.io/#about" aria-label="Open the link: /#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://www.gravatar.com/avatar/2cd392436367f45246c3532b8fe0ebc1?s=90" alt="Author&#39;s picture" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://irishshagua.github.io/#about" aria-label="Read more about the author">
+          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/2cd392436367f45246c3532b8fe0ebc1?s=110" alt="Author&#39;s picture" />
+        </a>
+        <h4 class="sidebar-profile-name">Brian Mooney</h4>
+        
+          <h5 class="sidebar-profile-bio">A software engineer currently working with <a href="https://engineering.zalando.com/">Zalando</a>. This blog is just a collection of thoughts and random shite&hellip;</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/" title="Blog">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">Blog</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/hobbies" title="Side Projects">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-cogs"></i>
+      
+      <span class="sidebar-button-desc">Side Projects</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/tags" title="Tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">Tags</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/#about" title="About">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">About</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://irishshagua.github.io/dublin-pubs-map" title="Dublin Pubs">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-beer"></i>
+      
+      <span class="sidebar-button-desc">Dublin Pubs</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/irishshagua" target="_blank" rel="noopener" title="GitHub">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://twitter.com/irishshagua" target="_blank" rel="noopener" title="Twitter">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-twitter"></i>
+      
+      <span class="sidebar-button-desc">Twitter</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://res.cloudinary.com/irishshagua/image/upload/v1640002449/blog/family-history/MellifontDroghedaToLiverpool_nps0v7.jpg')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title">
+      Family Tree Visualization
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time datetime="2021-12-20T00:00:00Z">
+        
+  December 20, 2021
+
+      </time>
+    
+    
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               hasCoverCaption">
+        <article class="post" id="top">
+          
+            <span class="post-header-cover-caption caption">Nautical Family Ties - I will document them someday&hellip;</span>
+          
+          
+          <div class="post-content markdown">
+            <div class="main-content-wrap">
+              <p>I have another <a href="https://irishshagua.github.io/2016/10/family-history/">blog entry</a> documenting some of the tools that I&rsquo;ve used in the past while researching/collecting data related to my Family tree. This entry will focus a little more on using the <a href="https://d3js.org/">D3.js</a> library to build a nice little interactive visualization of that Tree.</p>
+<p>Anyways, I was recently involved in a mini hackathon in work&hellip;
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Who said ya can&#39;t have fun in a Remote  <a href="https://twitter.com/hashtag/Hackathon?src=hash&amp;ref_src=twsrc%5Etfw">#Hackathon</a><a href="https://twitter.com/hashtag/Beer?src=hash&amp;ref_src=twsrc%5Etfw">#Beer</a> <a href="https://twitter.com/hashtag/Pizza?src=hash&amp;ref_src=twsrc%5Etfw">#Pizza</a> <a href="https://twitter.com/hashtag/FuckYouCompilerFairies?src=hash&amp;ref_src=twsrc%5Etfw">#FuckYouCompilerFairies</a> <a href="https://t.co/BmrMt8Jqq2">pic.twitter.com/BmrMt8Jqq2</a></p>&mdash; Boring Brian (@irishshagua) <a href="https://twitter.com/irishshagua/status/1471559324942180354?ref_src=twsrc%5Etfw">December 16, 2021</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+&hellip;and one of the other teams used the D3 JS <a href="https://bl.ocks.org/d3noob/43a860bc0024792f8803bba8ca0d5ecd">Collapsible Diagram example</a> to build a simple product hierarchy viewer. I liked the idea and thought it would work well as a family tree display.</p>
+<h2 id="details">Details</h2>
+<p>Building the visualization was actually pretty easy (well&hellip; let&rsquo;s say robbing the work that had already been done by others and slightly tweaking it). The <a href="https://irishshagua.github.io/js/family_tree_visualizer.js">D3 script</a> does everything. Embedding in the blog was relatively simple through the construction of a hugo <a href="https://gohugo.io/content-management/shortcodes/">shortcode</a>. The hardest part was figuring out how to get the text to display in the <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect">SVG rectangles</a>. Ideally this should have been done using a <code>foreignObject</code> but I had some issues getting this working so just did a positional fudge in the svg attributes. This will of course break dependening on text size etc, but it seemed fne for such a trivial visualization.</p>
+<h2 id="visualziation">Visualziation</h2>
+<link rel="stylesheet" href="https://irishshagua.github.io/css/family_tree_visualizer.css">
+
+<div id="family_tree" class="x-scroller"></div>
+
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://irishshagua.github.io/js/family_tree_visualizer.js"></script>
+<h2 id="gallery">Gallery</h2>
+<p>And here&rsquo;s a few photos from the Family Tree research. I think it&rsquo;s great to have a view of peoples (some of whom I&rsquo;ve never even met, or only met before I could walk &amp; talk) lives from a different time. It&rsquo;s one of the things about my researching my genealogy that I find most interesting.</p>
+
+              
+
+  
+  
+  
+    <div class="image-gallery">
+      <div class="image-gallery-metabar">
+        <span>Gallery 8 images</span>
+      </div>
+      <div class="image-gallery-photos image-gallery-photos--thumbnail">
+        
+          
+          
+          <div class="photo-box">
+            <a class="photo-box-inner fancybox"
+               data-fancybox="gallery-b18689c6e1f74c27e7081be0830947f8"
+               data-caption="Life on the Farm 🚜"
+               title="Life on the Farm 🚜"
+               href="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/LifeOnTheFarm_obkwz8.jpg"
+               aria-label="Zoom in on the picture">
+              
+              <img class="photo" src="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/LifeOnTheFarm_obkwz8.jpg">
+              
+            </a>
+          </div>
+        
+          
+          
+          <div class="photo-box">
+            <a class="photo-box-inner fancybox"
+               data-fancybox="gallery-b18689c6e1f74c27e7081be0830947f8"
+               data-caption="My Dad in his Youth 🤯"
+               title="My Dad in his Youth 🤯"
+               href="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/DadHippy_drlepb.png"
+               aria-label="Zoom in on the picture">
+              
+              <img class="photo" src="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/DadHippy_drlepb.png">
+              
+            </a>
+          </div>
+        
+          
+          
+          <div class="photo-box">
+            <a class="photo-box-inner fancybox"
+               data-fancybox="gallery-b18689c6e1f74c27e7081be0830947f8"
+               data-caption="My Grandfather&#39;s Service 🪖"
+               title="My Grandfather&#39;s Service 🪖"
+               href="https://res.cloudinary.com/irishshagua/image/upload/v1640000848/blog/family-history/SeamusMooney_ntdgzm.png"
+               aria-label="Zoom in on the picture">
+              
+              <img class="photo" src="https://res.cloudinary.com/irishshagua/image/upload/v1640000848/blog/family-history/SeamusMooney_ntdgzm.png">
+              
+            </a>
+          </div>
+        
+          
+          
+          <div class="photo-box">
+            <a class="photo-box-inner fancybox"
+               data-fancybox="gallery-b18689c6e1f74c27e7081be0830947f8"
+               data-caption="Census Records 📄"
+               title="Census Records 📄"
+               href="https://res.cloudinary.com/irishshagua/image/upload/v1604005462/blog/family-history/familyHistoryCensus_cjudvr.png"
+               aria-label="Zoom in on the picture">
+              
+            </a>
+          </div>
+        
+          
+          
+          <div class="photo-box">
+            <a class="photo-box-inner fancybox"
+               data-fancybox="gallery-b18689c6e1f74c27e7081be0830947f8"
+               data-caption="D3 Visualization 📊"
+               title="D3 Visualization 📊"
+               href="https://res.cloudinary.com/irishshagua/image/upload/v1640000399/blog/family-history/FamilyTreeVisualization_j3ne96.png"
+               aria-label="Zoom in on the picture">
+              
+            </a>
+          </div>
+        
+          
+          
+          <div class="photo-box">
+            <a class="photo-box-inner fancybox"
+               data-fancybox="gallery-b18689c6e1f74c27e7081be0830947f8"
+               data-caption="My Grandmother on the left 👵"
+               title="My Grandmother on the left 👵"
+               href="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/PegMooneyOnLeft_y9c3er.jpg"
+               aria-label="Zoom in on the picture">
+              
+            </a>
+          </div>
+        
+          
+          
+          <div class="photo-box">
+            <a class="photo-box-inner fancybox"
+               data-fancybox="gallery-b18689c6e1f74c27e7081be0830947f8"
+               data-caption="My Wife&#39;s Family Service History 🪖"
+               title="My Wife&#39;s Family Service History 🪖"
+               href="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/KoreanWar_hvosny.png"
+               aria-label="Zoom in on the picture">
+              
+            </a>
+          </div>
+        
+          
+          
+          <div class="photo-box">
+            <a class="photo-box-inner fancybox"
+               data-fancybox="gallery-b18689c6e1f74c27e7081be0830947f8"
+               data-caption="Old Family Snaps 🖼️"
+               title="Old Family Snaps 🖼️"
+               href="https://res.cloudinary.com/irishshagua/image/upload/v1640000847/blog/family-history/MartianAndKathleenAndWillieCorcoranAndBridgetteTanner_bpha7o.jpg"
+               aria-label="Zoom in on the picture">
+              
+            </a>
+          </div>
+        
+      </div>
+    </div>
+    
+
+
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://irishshagua.github.io/tags/hobbies/">hobbies</a>
+
+  <a class="tag tag--primary tag--small" href="https://irishshagua.github.io/tags/geneology/">geneology</a>
+
+  <a class="tag tag--primary tag--small" href="https://irishshagua.github.io/tags/work/">work</a>
+
+                  </div>
+                
+              
+            
+            
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://irishshagua.github.io/2021/05/wood-oven/" data-tooltip="Wood Oven" aria-label="PREVIOUS: Wood Oven">
+          
+              <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://irishshagua.github.io/2021/12/family-tree-visualization/" title="Share on Twitter" aria-label="Share on Twitter">
+          <i class="fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="Back to top">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+            
+  
+
+
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 Brian Mooney. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://irishshagua.github.io/2021/05/wood-oven/" data-tooltip="Wood Oven" aria-label="PREVIOUS: Wood Oven">
+          
+              <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://irishshagua.github.io/2021/12/family-tree-visualization/" title="Share on Twitter" aria-label="Share on Twitter">
+          <i class="fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="Back to top">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+      </div>
+      
+<div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-times"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Firishshagua.github.io%2F2021%2F12%2Ffamily-tree-visualization%2F" aria-label="Share on Twitter">
+          <i class="fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+
+
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-times"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://www.gravatar.com/avatar/2cd392436367f45246c3532b8fe0ebc1?s=110" alt="Author&#39;s picture" />
+    
+    <h4 id="about-card-name">Brian Mooney</h4>
+    
+      <div id="about-card-bio">A software engineer currently working with <a href="https://engineering.zalando.com/">Zalando</a>. This blog is just a collection of thoughts and random shite&hellip;</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Software Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker-alt"></i>
+        <br/>
+        Dublin, Ireland
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/irishshagua/image/upload/v1604004625/blog/cliffs_of_moher_elezul.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js" integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="https://irishshagua.github.io/js/script-yqzy9wdlzix4lbbwdnzvwx3egsne77earqmn73v9uno8aupuph8wfguccut.min.js"></script>
+
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+
+
+    
+  </body>
+</html>
+
