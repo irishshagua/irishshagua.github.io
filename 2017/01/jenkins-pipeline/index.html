@@ -25,7 +25,7 @@
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Hugo 0.91.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="generator" content="Hugo 0.111.3 with theme Tranquilpeak 0.4.8-BETA">
 <meta name="author" content="Brian Mooney">
 <meta name="keywords" content="">
 <meta name="description" content="Experimenting with Jenkins pipeline">
@@ -285,40 +285,40 @@ if (!doNotTrack) {
 <p>You can see the syntax for the file below which is a small sample of the commands available. Here, you can see more of the <a href="https://jenkins.io/doc/pipeline/steps/">pipeline commands</a> which can be used in your descriptor.</p>
 <pre tabindex="0"><code class="language-Jenkinsfile" data-lang="Jenkinsfile">    node {
       def mvnHome
-      stage('Preparation') {
-        echo(&quot;Check out branch and setup build pipeline environment&quot;)
+      stage(&#39;Preparation&#39;) {
+        echo(&#34;Check out branch and setup build pipeline environment&#34;)
         checkout scm
-        mvnHome = tool 'M3'
+        mvnHome = tool &#39;M3&#39;
       }
    
-      stage('Compile') {
-        echo(&quot;Check for compilation issues&quot;)
-        sh &quot;'${mvnHome}/bin/mvn' clean compile&quot;
+      stage(&#39;Compile&#39;) {
+        echo(&#34;Check for compilation issues&#34;)
+        sh &#34;&#39;${mvnHome}/bin/mvn&#39; clean compile&#34;
       }
    
-      stage('Test') {
-        echo(&quot;Execute Unit tests&quot;)
-        sh &quot;'${mvnHome}/bin/mvn' test&quot;
-        junit '**/target/surefire-reports/TEST-*.xml'
+      stage(&#39;Test&#39;) {
+        echo(&#34;Execute Unit tests&#34;)
+        sh &#34;&#39;${mvnHome}/bin/mvn&#39; test&#34;
+        junit &#39;**/target/surefire-reports/TEST-*.xml&#39;
       }
    
-      stage('Validate') {
-        sh &quot;'${mvnHome}/bin/mvn' -DskipTests install&quot;
-        parallel('Code Coverage': {
-          sh &quot;'${mvnHome}/bin/mvn' jacoco:check&quot;
-        }, 'Style Check': {
-          sh &quot;'${mvnHome}/bin/mvn' checkstyle:checkstyle&quot;
-        }, 'Find Bugs': {
-          sh &quot;'${mvnHome}/bin/mvn' findbugs:check&quot;
+      stage(&#39;Validate&#39;) {
+        sh &#34;&#39;${mvnHome}/bin/mvn&#39; -DskipTests install&#34;
+        parallel(&#39;Code Coverage&#39;: {
+          sh &#34;&#39;${mvnHome}/bin/mvn&#39; jacoco:check&#34;
+        }, &#39;Style Check&#39;: {
+          sh &#34;&#39;${mvnHome}/bin/mvn&#39; checkstyle:checkstyle&#34;
+        }, &#39;Find Bugs&#39;: {
+          sh &#34;&#39;${mvnHome}/bin/mvn&#39; findbugs:check&#34;
         })
       }
 
-      stage('Build') {
-        sh &quot;'${mvnHome}/bin/mvn' -DskipTests package&quot;
+      stage(&#39;Build&#39;) {
+        sh &#34;&#39;${mvnHome}/bin/mvn&#39; -DskipTests package&#34;
       }
 
-      stage('Deploy') {
-        input &quot;Happy to deploy or what?&quot;
+      stage(&#39;Deploy&#39;) {
+        input &#34;Happy to deploy or what?&#34;
       }
     }
 </code></pre><p><img src="https://res.cloudinary.com/irishshagua/image/upload/v1604006630/blog/jenkins-pipeline/jenkinsOldPipelineView_ilxatj.png" alt="Jenkins Old Pipeline View">
@@ -417,7 +417,7 @@ if (!doNotTrack) {
         </article>
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
-    &copy; 2021 Brian Mooney. All Rights Reserved
+    &copy; 2023 Brian Mooney. All Rights Reserved
   </span>
 </footer>
 

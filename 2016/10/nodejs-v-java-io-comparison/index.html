@@ -25,7 +25,7 @@
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Hugo 0.91.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="generator" content="Hugo 0.111.3 with theme Tranquilpeak 0.4.8-BETA">
 <meta name="author" content="Brian Mooney">
 <meta name="keywords" content="">
 <meta name="description" content="Comparing IO performance of Java and NodeJS">
@@ -285,15 +285,15 @@ if (!doNotTrack) {
 <p>Using a simple jmeter script we will test each of the calls a number of times for 100 concurrent users.</p>
 <h3 id="the-test-enviornment">The Test Enviornment</h3>
 <p>To try and validate which app performed better I wanted the test to be as fair as possible. By running the app server inside of an EC2 isntance on AWS I could at least guarantee that there was nothing running on my laptop which would spoil the results. And seeing as the app server was in the :cloud:, it only made sense to host the DB there too&hellip; This gave me an opportunity to try out <a href="https://aws.amazon.com/rds">Amazon RDS</a> whcih was pretty cool. In the space of a few minutes I had a MySQL DB (well it was actually an Amazon Aurora DB, but I think it&rsquo;s basically MySQL) up and waiting for some requests. I created a very simple schema with only one table:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">    <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>pub<span style="color:#f92672">`</span> ( 
-         <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT, 
-         <span style="color:#f92672">`</span>name<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  
-         <span style="color:#f92672">`</span>latitude<span style="color:#f92672">`</span> double <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  
-         <span style="color:#f92672">`</span>longitude<span style="color:#f92672">`</span> double <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  
-         <span style="color:#f92672">`</span>review<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">1000</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  
-          <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)  
-    ) ENGINE<span style="color:#f92672">=</span>InnoDB AUTO_INCREMENT<span style="color:#f92672">=</span><span style="color:#ae81ff">6</span> <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>latin1
-</code></pre></div><p>The UI for RDS is actually pretty cool. You get simple monitoring and metrics out of the box. The only difficult part was getting access between the DB and the app server, but this was down to my own rushed stupidity. I hadn&rsquo;t built them in the same VPC so couldn&rsquo;t give access to the security group which the app server resided in. One quick re-create of the VM (and a few pennys extra into Amazons coffers) and we were ready to rock.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span>    <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>pub<span style="color:#f92672">`</span> ( 
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT, 
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">`</span>name<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">`</span>latitude<span style="color:#f92672">`</span> double <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">`</span>longitude<span style="color:#f92672">`</span> double <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">`</span>review<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">1000</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)  
+</span></span><span style="display:flex;"><span>    ) ENGINE<span style="color:#f92672">=</span>InnoDB AUTO_INCREMENT<span style="color:#f92672">=</span><span style="color:#ae81ff">6</span> <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>latin1
+</span></span></code></pre></div><p>The UI for RDS is actually pretty cool. You get simple monitoring and metrics out of the box. The only difficult part was getting access between the DB and the app server, but this was down to my own rushed stupidity. I hadn&rsquo;t built them in the same VPC so couldn&rsquo;t give access to the security group which the app server resided in. One quick re-create of the VM (and a few pennys extra into Amazons coffers) and we were ready to rock.</p>
 <p><img src="https://res.cloudinary.com/irishshagua/image/upload/v1604006050/blog/JavaNodePerfComp/RDS-Dash_pvuwal.png" alt="RDS Dashboard"></p>
 <p><strong><em>RDS Dashboard</em></strong></p>
 <h3 id="node-js-event-loop">Node JS Event Loop</h3>
@@ -303,44 +303,44 @@ if (!doNotTrack) {
 <h3 id="the-apps">The Apps</h3>
 <p>To start with a compliment, the <a href="https://github.com/irishshagua/java-nodejs-io-comparison/tree/master/nodeJS">NodeJS version</a> of the app is definitely more concise than the <a href="https://github.com/irishshagua/java-nodejs-io-comparison/tree/master/java">Java version</a>. At only 49 lines of code, it&rsquo;s possible to get a very basic app which can serve traffic from the DB. Compared to Javas 93 lines, it&rsquo;s pretty much half the code. Although both could be wrote in less, it was really the intent here. It does seem fair to highlight that whatever you write in Node, it&rsquo;s probably gonna be less verbose than the Java equivalent. We&rsquo;ll save the comparisons between alternate JVM langs for a different post&hellip;
 The Node app is made up of only two files, seperated by responsibility. One is responsible for serving the HTTP traffic and the other is responsible for the data access. You can see from the below snippet how simple it is to actually instantiate a server using one of the <em>many</em> libs available.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">express</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;express&#39;</span>);
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">express</span>();
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">dao</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./dao&#39;</span>);
-
-    <span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;/pubs&#39;</span>, <span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) {
-	  <span style="color:#a6e22e">dao</span>.<span style="color:#a6e22e">getAllPubs</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">dbResult</span>) {
-		<span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">json</span>(<span style="color:#a6e22e">dbResult</span>);
-	  });
-    });
-
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">server</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">listen</span>(<span style="color:#ae81ff">8080</span>, <span style="color:#66d9ef">function</span> () {
-      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;App started. Listening on http://localhost:8080&#34;</span>);
-    });
-</code></pre></div><p><strong><em>NodeJS Server Snippet</em></strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">express</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;express&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">express</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">dao</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./dao&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;/pubs&#39;</span>, <span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) {
+</span></span><span style="display:flex;"><span>	  <span style="color:#a6e22e">dao</span>.<span style="color:#a6e22e">getAllPubs</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">dbResult</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">json</span>(<span style="color:#a6e22e">dbResult</span>);
+</span></span><span style="display:flex;"><span>	  });
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">server</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">listen</span>(<span style="color:#ae81ff">8080</span>, <span style="color:#66d9ef">function</span> () {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;App started. Listening on http://localhost:8080&#34;</span>);
+</span></span><span style="display:flex;"><span>    });
+</span></span></code></pre></div><p><strong><em>NodeJS Server Snippet</em></strong></p>
 <p>But it is possible to setup the same kind of async server using Java libs like the wonderful <a href="http://undertow.io/">Undertow</a>. To try and stay consistant across the two apps, I&rsquo;ve split them the exact same so there are two Java classes, one responsible for serving HTTP requests and the other responsible for DB access. The only difference is that the model for the Java app lives in a seperate file. This is obviously a benefit of every object already existing as JSON in JS land.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">...</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      PathTemplateHandler handler <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PathTemplateHandler<span style="color:#f92672">();</span>
-
-      handler<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/pubs&#34;</span><span style="color:#f92672">,</span> Server<span style="color:#f92672">::</span>getAllPubs<span style="color:#f92672">);</span>
-
-      Undertow server <span style="color:#f92672">=</span> Undertow<span style="color:#f92672">.</span><span style="color:#a6e22e">builder</span><span style="color:#f92672">()</span>
-        <span style="color:#f92672">.</span><span style="color:#a6e22e">addHttpListener</span><span style="color:#f92672">(</span>8080<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;0.0.0.0&#34;</span><span style="color:#f92672">)</span>
-        <span style="color:#f92672">.</span><span style="color:#a6e22e">setHandler</span><span style="color:#f92672">(</span>handler<span style="color:#f92672">)</span>
-        <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
-
-      server<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
-    <span style="color:#f92672">}</span>
-  
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">getAllPubs</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> HttpServerExchange exchange<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>exchange<span style="color:#f92672">.</span><span style="color:#a6e22e">isInIoThread</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
-        exchange<span style="color:#f92672">.</span><span style="color:#a6e22e">dispatch</span><span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
-          List<span style="color:#f92672">&lt;</span>Pub<span style="color:#f92672">&gt;</span> pubs <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DBQuery<span style="color:#f92672">().</span><span style="color:#a6e22e">getAllPubs</span><span style="color:#f92672">();</span>
-          exchange<span style="color:#f92672">.</span><span style="color:#a6e22e">getResponseHeaders</span><span style="color:#f92672">().</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>Headers<span style="color:#f92672">.</span><span style="color:#a6e22e">CONTENT_TYPE</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;application/json&#34;</span><span style="color:#f92672">);</span>
-          exchange<span style="color:#f92672">.</span><span style="color:#a6e22e">getResponseSender</span><span style="color:#f92672">().</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>GSON<span style="color:#f92672">.</span><span style="color:#a6e22e">toJson</span><span style="color:#f92672">(</span>pubs<span style="color:#f92672">));</span>
-        <span style="color:#f92672">});</span>
-      <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
-</code></pre></div><p><strong><em>Java Server Snippet</em></strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">...</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      PathTemplateHandler handler <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PathTemplateHandler<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      handler<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/pubs&#34;</span><span style="color:#f92672">,</span> Server<span style="color:#f92672">::</span>getAllPubs<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      Undertow server <span style="color:#f92672">=</span> Undertow<span style="color:#f92672">.</span><span style="color:#a6e22e">builder</span><span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">addHttpListener</span><span style="color:#f92672">(</span><span style="color:#ae81ff">8080</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;0.0.0.0&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">setHandler</span><span style="color:#f92672">(</span>handler<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      server<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">getAllPubs</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> HttpServerExchange exchange<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>exchange<span style="color:#f92672">.</span><span style="color:#a6e22e">isInIoThread</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        exchange<span style="color:#f92672">.</span><span style="color:#a6e22e">dispatch</span><span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>          List<span style="color:#f92672">&lt;</span>Pub<span style="color:#f92672">&gt;</span> pubs <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DBQuery<span style="color:#f92672">().</span><span style="color:#a6e22e">getAllPubs</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>          exchange<span style="color:#f92672">.</span><span style="color:#a6e22e">getResponseHeaders</span><span style="color:#f92672">().</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>Headers<span style="color:#f92672">.</span><span style="color:#a6e22e">CONTENT_TYPE</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;application/json&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>          exchange<span style="color:#f92672">.</span><span style="color:#a6e22e">getResponseSender</span><span style="color:#f92672">().</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>GSON<span style="color:#f92672">.</span><span style="color:#a6e22e">toJson</span><span style="color:#f92672">(</span>pubs<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">});</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p><strong><em>Java Server Snippet</em></strong></p>
 <h3 id="the-results">The Results</h3>
 <p>So how do the apps stack up against each other? Actually, they were pretty close in terms of performance. Bearing in mind that these are both extremely simplistic apps and could both probably be optimised, I think it&rsquo;s a fair conclusion to draw from the below results that the initial statement NodeJS would blow that Java out of the water was a bit premature. It is very possible to write asynchronous code which runs on the JVM, and hopefully the code (<a href="https://github.com/irishshagua/java-nodejs-io-comparison/tree/master/java">which is available on github</a>) shows that it is not particularly difficult to do that. The results below are so close that it is nearly negligible to declare a winner. The same worker thread delegation can be achieved in both languages so it really comes down to experience, preference etc.. as to which you should choose.</p>
 <p><strong><em>Node Results</em></strong></p>
@@ -520,7 +520,7 @@ The Node app is made up of only two files, seperated by responsibility. One is r
         </article>
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
-    &copy; 2021 Brian Mooney. All Rights Reserved
+    &copy; 2023 Brian Mooney. All Rights Reserved
   </span>
 </footer>
 

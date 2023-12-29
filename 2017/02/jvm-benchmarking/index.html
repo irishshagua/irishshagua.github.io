@@ -25,7 +25,7 @@
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Hugo 0.91.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="generator" content="Hugo 0.111.3 with theme Tranquilpeak 0.4.8-BETA">
 <meta name="author" content="Brian Mooney">
 <meta name="keywords" content="">
 <meta name="description" content="Benchmarking on the JVM">
@@ -285,58 +285,58 @@ if (!doNotTrack) {
 <h2 id="simple-benchmark">Simple Benchmark</h2>
 <p>I always find it more beneficial to try and write POC code that does something useful instead of the majority of examples you find on the net which are just Hello World. In that vein, the following benchmarks try and compare the performance of the different ways in which you can iterate over a collection in Java.</p>
 <p>You can see from the below code snippet, how the benchmarks are layed out in a JUnit annotated method style:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@State</span><span style="color:#f92672">(</span>Scope<span style="color:#f92672">.</span><span style="color:#a6e22e">Benchmark</span><span style="color:#f92672">)</span>
-<span style="color:#a6e22e">@Warmup</span><span style="color:#f92672">(</span>iterations <span style="color:#f92672">=</span> 5<span style="color:#f92672">,</span> time <span style="color:#f92672">=</span> 500<span style="color:#f92672">,</span> timeUnit <span style="color:#f92672">=</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">MILLISECONDS</span><span style="color:#f92672">)</span>
-<span style="color:#a6e22e">@Measurement</span><span style="color:#f92672">(</span>iterations <span style="color:#f92672">=</span> 10<span style="color:#f92672">,</span> time <span style="color:#f92672">=</span> 1<span style="color:#f92672">,</span> timeUnit <span style="color:#f92672">=</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">)</span>
-<span style="color:#a6e22e">@Fork</span><span style="color:#f92672">(</span>2<span style="color:#f92672">)</span>
-<span style="color:#a6e22e">@Threads</span><span style="color:#f92672">(</span>4<span style="color:#f92672">)</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ForLoopBenchmarks</span> <span style="color:#f92672">{</span>
-
-  <span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> ints<span style="color:#f92672">;</span>
-
-  <span style="color:#a6e22e">@Param</span><span style="color:#f92672">({</span><span style="color:#e6db74">&#34;100&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;10000&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;1000000&#34;</span><span style="color:#f92672">})</span>
-  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> size<span style="color:#f92672">;</span>
-
-  <span style="color:#a6e22e">@Setup</span>
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">createTestData</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    ints <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;(</span>size<span style="color:#f92672">);</span>
-    IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">range</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> size <span style="color:#f92672">+</span> 1<span style="color:#f92672">).</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>ints<span style="color:#f92672">::</span>add<span style="color:#f92672">);</span>
-  <span style="color:#f92672">}</span>
-
-  <span style="color:#a6e22e">@Benchmark</span>
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">sumWithTraditionalForLoop</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">long</span> sum <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> ints<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">();</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
-      sum <span style="color:#f92672">+=</span> ints<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#66d9ef">return</span> sum<span style="color:#f92672">;</span>
-  <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>The above code snippet only shows one of the benchmarks. The <a href="https://github.com/irishshagua/java-loops-benchmark/blob/master/src/main/java/com/mooneyserver/ForLoopBenchmarks.java">full source</a> for the above can be found on GitHub. <br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#a6e22e">@State</span><span style="color:#f92672">(</span>Scope<span style="color:#f92672">.</span><span style="color:#a6e22e">Benchmark</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Warmup</span><span style="color:#f92672">(</span>iterations <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span><span style="color:#f92672">,</span> time <span style="color:#f92672">=</span> <span style="color:#ae81ff">500</span><span style="color:#f92672">,</span> timeUnit <span style="color:#f92672">=</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">MILLISECONDS</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Measurement</span><span style="color:#f92672">(</span>iterations <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span><span style="color:#f92672">,</span> time <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">,</span> timeUnit <span style="color:#f92672">=</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Fork</span><span style="color:#f92672">(</span><span style="color:#ae81ff">2</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Threads</span><span style="color:#f92672">(</span><span style="color:#ae81ff">4</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ForLoopBenchmarks</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> ints<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">@Param</span><span style="color:#f92672">({</span><span style="color:#e6db74">&#34;100&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;10000&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;1000000&#34;</span><span style="color:#f92672">})</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> size<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">@Setup</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">createTestData</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    ints <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;(</span>size<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">range</span><span style="color:#f92672">(</span><span style="color:#ae81ff">1</span><span style="color:#f92672">,</span> size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">).</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>ints<span style="color:#f92672">::</span>add<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">@Benchmark</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">sumWithTraditionalForLoop</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">long</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> ints<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">();</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      sum <span style="color:#f92672">+=</span> ints<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> sum<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>The above code snippet only shows one of the benchmarks. The <a href="https://github.com/irishshagua/java-loops-benchmark/blob/master/src/main/java/com/mooneyserver/ForLoopBenchmarks.java">full source</a> for the above can be found on GitHub. <br>
 In terms of the integration with a Jenkins job, the easiest thing to do was hook the benchmark run into the maven lifecycle. It&rsquo;s realtively easy to run the Benchmark suite using the mvn exec plugin. Although, I did need to use <a href="http://stackoverflow.com/questions/35574688/how-to-run-a-jmh-benchmark-in-maven-using-execjava-instead-of-execexec">this solution from StackOverflow</a> to resolve an issue with the classpath that was being used for the benchmark run. As JMH can generate a csv report (amongst other types) it would be possible to get the Jenkins job to archive the generated report as a build artifact. Below is the maven pom entry used to execute the JMH tests as part of a build. Again, the full source is available on GitHub.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;plugin&gt;</span>
-  <span style="color:#f92672">&lt;groupId&gt;</span>org.codehaus.mojo<span style="color:#f92672">&lt;/groupId&gt;</span>
-  <span style="color:#f92672">&lt;artifactId&gt;</span>exec-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
-  <span style="color:#f92672">&lt;executions&gt;</span>
-    <span style="color:#f92672">&lt;execution&gt;</span>
-      <span style="color:#f92672">&lt;phase&gt;</span>verify<span style="color:#f92672">&lt;/phase&gt;</span>
-      <span style="color:#f92672">&lt;goals&gt;</span>
-        <span style="color:#f92672">&lt;goal&gt;</span>java<span style="color:#f92672">&lt;/goal&gt;</span>
-      <span style="color:#f92672">&lt;/goals&gt;</span>
-    <span style="color:#f92672">&lt;/execution&gt;</span>
-  <span style="color:#f92672">&lt;/executions&gt;</span>
-  <span style="color:#f92672">&lt;configuration&gt;</span>
-    <span style="color:#f92672">&lt;mainClass&gt;</span>com.mooneyserver.ExecuteBenchmarks<span style="color:#f92672">&lt;/mainClass&gt;</span>
-    <span style="color:#f92672">&lt;systemProperties&gt;</span>
-      <span style="color:#f92672">&lt;systemProperty&gt;</span>
-        <span style="color:#f92672">&lt;key&gt;</span>java.class.path<span style="color:#f92672">&lt;/key&gt;</span>
-        <span style="color:#f92672">&lt;value&gt;</span>${project.build.outputDirectory}${path.separator}${depClasspath}<span style="color:#f92672">&lt;/value&gt;</span>
-      <span style="color:#f92672">&lt;/systemProperty&gt;</span>
-    <span style="color:#f92672">&lt;/systemProperties&gt;</span>
-  <span style="color:#f92672">&lt;/configuration&gt;</span>
-<span style="color:#f92672">&lt;/plugin&gt;</span>
-</code></pre></div><h2 id="project-integration">Project Integration</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;plugin&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;groupId&gt;</span>org.codehaus.mojo<span style="color:#f92672">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;artifactId&gt;</span>exec-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;executions&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;execution&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;phase&gt;</span>verify<span style="color:#f92672">&lt;/phase&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;goals&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;goal&gt;</span>java<span style="color:#f92672">&lt;/goal&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;/goals&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/execution&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/executions&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;configuration&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;mainClass&gt;</span>com.mooneyserver.ExecuteBenchmarks<span style="color:#f92672">&lt;/mainClass&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;systemProperties&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;systemProperty&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;key&gt;</span>java.class.path<span style="color:#f92672">&lt;/key&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;value&gt;</span>${project.build.outputDirectory}${path.separator}${depClasspath}<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;/systemProperty&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/systemProperties&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/configuration&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/plugin&gt;</span>
+</span></span></code></pre></div><h2 id="project-integration">Project Integration</h2>
 <p>Having toyed around with fairly simple benhcmarks in the previous section, it was time to try and use JMH on a real world project. I&rsquo;m currently working on a stream processing platform for risk analytics in the day job. The application is built using Akka with Scala. Rather surprisingly, there was absolutely no issues getting the JMH benchmark to run against scala code. The biggest issue was actually being able to access the algorithms that I wanted to test due to the fact that they were embedded inside an actor. Initially, I wasn&rsquo;t able to instantiate the actor. Then the algorithm that I wanted to test was too tightly bound to framework code. I eventually refactored the code to isolate the algorithm into an object def. It was actually a great way at isolating the code which would have made even unit testing it easier. If you have worked with Akka, you will be familiar with any <em>unit</em> tests (and I use that phrase with a heavy pinch of salt) that you write turning into integration tests using the Akka TestKit library (which is actually a great testing utility). Being forced to separate the actual testable logic for the Benchmarking prompted me to go an add a few extra unit tests which I had been too lazy to write initially. I can&rsquo;t really blame JMH for these difficulties as it was more my shitty way of writing code. But ya know, deadlines&hellip; deadlines&hellip; dealines&hellip;</p>
 <p>I&rsquo;m yet to see a real benefit with the project integration as there is not really an area of the codebase which is both algorithmicly complex and also under heavy churn. Also, to get accurate benchmark results, the build time for the project is increased by a ridiculous amount. Therefore, although it has been an interesting technical task trying to integrate benchmarking into an actual project, I&rsquo;m not sure if it&rsquo;s something that I&rsquo;ll persist with for this project.</p>
 <h2 id="conclusion">Conclusion</h2>
@@ -424,7 +424,7 @@ In terms of the integration with a Jenkins job, the easiest thing to do was hook
         </article>
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
-    &copy; 2021 Brian Mooney. All Rights Reserved
+    &copy; 2023 Brian Mooney. All Rights Reserved
   </span>
 </footer>
 

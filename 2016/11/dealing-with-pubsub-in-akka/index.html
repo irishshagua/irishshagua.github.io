@@ -25,7 +25,7 @@
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Hugo 0.91.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="generator" content="Hugo 0.111.3 with theme Tranquilpeak 0.4.8-BETA">
 <meta name="author" content="Brian Mooney">
 <meta name="keywords" content="">
 <meta name="description" content="An issue with distributed PubSub in Akka">
@@ -280,45 +280,45 @@ if (!doNotTrack) {
 <p>Using Akka Sharding, multiple actors who would need to listen for the changes (the subscribers) and would be distributed across many nodes in a cluster. The DistributedPubSub mediator extension creates a single actor in each node which act as a relay for all published messages. A publisher will send a message to the mediator which will then forward the message to all subscribed actors within the node and to the mediators in each of the other nodes for distribution to the remote actors. As there was a large number of subscribers, and there would possibly be large periods of quiet time (i.e. no messages of interest being published), the subscribing actors would be passivated. What needed to be established was whether or not the mediator would act the same with passivated actors.</p>
 <h2 id="setup">Setup</h2>
 <p>To model the problem we need a publisher which would be responsible for broadcasting the message:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala">    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PublisherActor</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">Actor</span> <span style="color:#66d9ef">with</span> <span style="color:#a6e22e">ActorLogging</span> <span style="color:#f92672">{</span>
-      log<span style="color:#f92672">.</span>info<span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;Publisher </span><span style="color:#e6db74">${</span>self<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74"> actor instance created&#34;</span><span style="color:#f92672">)</span>
-
-      <span style="color:#66d9ef">val</span> mediator <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">DistributedPubSub</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span>system<span style="color:#f92672">).</span>mediator
-
-      <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">def</span> receive<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Receive</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">case</span> event<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">UpdateableEvent</span> <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">{</span>
-          log<span style="color:#f92672">.</span>info<span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;</span><span style="color:#e6db74">$event</span><span style="color:#e6db74"> to be routed to all listeners&#34;</span><span style="color:#f92672">)</span>
-          mediator <span style="color:#f92672">!</span> <span style="color:#a6e22e">Publish</span><span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;Publisher-</span><span style="color:#e6db74">${</span>self<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">,</span> event<span style="color:#f92672">)</span>
-        <span style="color:#f92672">}</span>
-      <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
-</code></pre></div><p>And a subscriber. The subscriber extends PersistentActor to enable passivation during quiet periods. In this instance the actor will go to sleep after 20 seconds of inactivity:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala">    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SubscribingActor</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">PersistentActor</span> <span style="color:#66d9ef">with</span> <span style="color:#a6e22e">ActorLogging</span> <span style="color:#f92672">{</span>
-
-      <span style="color:#66d9ef">var</span> state<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubscriberState</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">SubscriberState</span><span style="color:#f92672">(</span>subscribedPublisher <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">None</span><span style="color:#f92672">)</span>
-      <span style="color:#66d9ef">val</span> mediator <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">DistributedPubSub</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span>system<span style="color:#f92672">).</span>mediator
-
-      context<span style="color:#f92672">.</span>setReceiveTimeout<span style="color:#f92672">(</span><span style="color:#ae81ff">20</span> seconds<span style="color:#f92672">)</span>
-
-      <span style="color:#66d9ef">def</span> updateSubscriberState<span style="color:#f92672">(</span>publisher<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">UpdateableEvent</span><span style="color:#f92672">)</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubscriberState</span> <span style="color:#f92672">=</span>
-        state<span style="color:#f92672">.</span>copy<span style="color:#f92672">(</span>subscribedPublisher <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">Some</span><span style="color:#f92672">(</span>publisher<span style="color:#f92672">.</span>id<span style="color:#f92672">))</span>
-
-      <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">def</span> receiveCommand<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Receive</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">case</span> event<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">UpdateableEvent</span> <span style="color:#f92672">=&gt;</span> persist<span style="color:#f92672">(</span>event<span style="color:#f92672">)</span> state <span style="color:#66d9ef">=</span> 
-          updateSubscriberState<span style="color:#f92672">(</span>event<span style="color:#f92672">)</span>
-        <span style="color:#66d9ef">case</span> subscription<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Subscription</span> <span style="color:#f92672">=&gt;</span> 
-          mediator <span style="color:#f92672">!</span> <span style="color:#a6e22e">Subscribe</span><span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;Publisher-</span><span style="color:#e6db74">${</span>subscription<span style="color:#f92672">.</span>publisherId<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">,</span> self<span style="color:#f92672">)</span>
-        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">SubscribeAck</span><span style="color:#f92672">(</span><span style="color:#a6e22e">Subscribe</span><span style="color:#f92672">(</span>subscribedTopic<span style="color:#f92672">,</span> group<span style="color:#f92672">,</span> subscribee<span style="color:#f92672">))</span> <span style="color:#66d9ef">⇒</span> noop
-        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ReceiveTimeout</span> <span style="color:#66d9ef">=&gt;</span> context<span style="color:#f92672">.</span>stop<span style="color:#f92672">(</span>self<span style="color:#f92672">)</span>
-      <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
-</code></pre></div><p>To control the test, a simple REST interface was placed in front of these actors. This would enable control around when messages were published. The full code for this can be found on <a href="https://github.com/irishshagua/akka-distributed-pub-sub-testing">github</a>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-scala" data-lang="scala"><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PublisherActor</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">Actor</span> <span style="color:#66d9ef">with</span> <span style="color:#a6e22e">ActorLogging</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      log<span style="color:#f92672">.</span>info<span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;Publisher </span><span style="color:#e6db74">${</span>self<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74"> actor instance created&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">val</span> mediator <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">DistributedPubSub</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span>system<span style="color:#f92672">).</span>mediator
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">def</span> receive<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Receive</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> event<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">UpdateableEvent</span> <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>          log<span style="color:#f92672">.</span>info<span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;</span><span style="color:#e6db74">$event</span><span style="color:#e6db74"> to be routed to all listeners&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>          mediator <span style="color:#f92672">!</span> <span style="color:#a6e22e">Publish</span><span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;Publisher-</span><span style="color:#e6db74">${</span>self<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">,</span> event<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>And a subscriber. The subscriber extends PersistentActor to enable passivation during quiet periods. In this instance the actor will go to sleep after 20 seconds of inactivity:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-scala" data-lang="scala"><span style="display:flex;"><span>    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SubscribingActor</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">PersistentActor</span> <span style="color:#66d9ef">with</span> <span style="color:#a6e22e">ActorLogging</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">var</span> state<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubscriberState</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">SubscriberState</span><span style="color:#f92672">(</span>subscribedPublisher <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">None</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">val</span> mediator <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">DistributedPubSub</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span>system<span style="color:#f92672">).</span>mediator
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      context<span style="color:#f92672">.</span>setReceiveTimeout<span style="color:#f92672">(</span><span style="color:#ae81ff">20</span> seconds<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">def</span> updateSubscriberState<span style="color:#f92672">(</span>publisher<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">UpdateableEvent</span><span style="color:#f92672">)</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubscriberState</span> <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>        state<span style="color:#f92672">.</span>copy<span style="color:#f92672">(</span>subscribedPublisher <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">Some</span><span style="color:#f92672">(</span>publisher<span style="color:#f92672">.</span>id<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">def</span> receiveCommand<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Receive</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> event<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">UpdateableEvent</span> <span style="color:#f92672">=&gt;</span> persist<span style="color:#f92672">(</span>event<span style="color:#f92672">)</span> state <span style="color:#66d9ef">=</span> 
+</span></span><span style="display:flex;"><span>          updateSubscriberState<span style="color:#f92672">(</span>event<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> subscription<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Subscription</span> <span style="color:#f92672">=&gt;</span> 
+</span></span><span style="display:flex;"><span>          mediator <span style="color:#f92672">!</span> <span style="color:#a6e22e">Subscribe</span><span style="color:#f92672">(</span><span style="color:#e6db74">s&#34;Publisher-</span><span style="color:#e6db74">${</span>subscription<span style="color:#f92672">.</span>publisherId<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">,</span> self<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">SubscribeAck</span><span style="color:#f92672">(</span><span style="color:#a6e22e">Subscribe</span><span style="color:#f92672">(</span>subscribedTopic<span style="color:#f92672">,</span> group<span style="color:#f92672">,</span> subscribee<span style="color:#f92672">))</span> <span style="color:#66d9ef">⇒</span> noop
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ReceiveTimeout</span> <span style="color:#66d9ef">=&gt;</span> context<span style="color:#f92672">.</span>stop<span style="color:#f92672">(</span>self<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>To control the test, a simple REST interface was placed in front of these actors. This would enable control around when messages were published. The full code for this can be found on <a href="https://github.com/irishshagua/akka-distributed-pub-sub-testing">github</a>.</p>
 <h2 id="execution">Execution</h2>
 <p>Testing was quite simple. Using a curl request, create a Subscriber.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -d @subscription.json 127.0.0.1:8080/subscriber
-</code></pre></div><p>Before the subscriber is passivated, publish an event and make sure that the subscriber received the event.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -d @updateableEvent.json 127.0.0.1:8080/publisher
-</code></pre></div><p>And then after the subscriber was passivated, resubmit the event and see if the subscriber was awoken to process the
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>    curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -d @subscription.json 127.0.0.1:8080/subscriber
+</span></span></code></pre></div><p>Before the subscriber is passivated, publish an event and make sure that the subscriber received the event.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>    curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -d @updateableEvent.json 127.0.0.1:8080/publisher
+</span></span></code></pre></div><p>And then after the subscriber was passivated, resubmit the event and see if the subscriber was awoken to process the
 event.</p>
 <h2 id="results">Results</h2>
 <p>Unfortunately as can be seen from the logs below, the mediator seems to only hold a reference to the current actor path
@@ -418,7 +418,7 @@ slumber&hellip; :disappointed:</p>
         </article>
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
-    &copy; 2021 Brian Mooney. All Rights Reserved
+    &copy; 2023 Brian Mooney. All Rights Reserved
   </span>
 </footer>
 

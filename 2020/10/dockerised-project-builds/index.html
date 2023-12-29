@@ -25,7 +25,7 @@
     <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Hugo 0.91.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="generator" content="Hugo 0.111.3 with theme Tranquilpeak 0.4.8-BETA">
 <meta name="author" content="Brian Mooney">
 <meta name="keywords" content="">
 <meta name="description" content="Relaunching the blog">
@@ -273,8 +273,8 @@ if (!doNotTrack) {
             <div class="main-content-wrap">
               <p>So I finally got around to adding some more content to the blog&hellip;. Kinda. Ok so we&rsquo;re in Covid lockdown 2.0 at the moment, and the kids are off on their mid term break so I took a week off work to try and help out Ling looking after them. After all, everywhere is closed so we don&rsquo;t have many options apart from trying to do stuff around the house. <code>What's that got to do with your feckin blog?</code> I hear you ask&hellip; Well, seeing as there&rsquo;s no school in the mornings, the kids have comandeered the TV in the evening. We&rsquo;re watching <a href="https://www.imdb.com/title/tt0377981">Gnomeo and Juliet</a> at the moment&hellip; Good soundtrack. Anyways, this means I&rsquo;ve got some time on the laptop to mess around with.</p>
 <p>When I originally started this blog, it was using Jekyll to generate the site. There was a large gap where I didn&rsquo;t add anything new to the blog and tbh, I kinda forgot how to build the site. I&rsquo;ve changed to a chromebook at home recently, as I don&rsquo;t really do much side-project(y) stuff anymore and it&rsquo;s easier for the kids to use, but I couldn&rsquo;t get Jekyll installed properly to even remove a facebook link from the old incarnation of the site (having proudly deleted my facebook account a while back). So I wanted to overhaul the site. Pick a new template, make it easier to build and publish etc etc etc&hellip; I had a quick look online and <a href="https://gohugo.io/">Hugo</a> seemed to be a good option. It had a lot of template options and seemed to be easy to use. And the best part, no issues installing Ruby versions&hellip; Anyways, it was easy enough to transfer the old posts over to the new hugo format, there really wasn&rsquo;t that many posts to migrate. But I wanted to ensure that I didn&rsquo;t make the same mistake again and potentially forget how to add new posts in the future. Re-learning how to add posts wouldn&rsquo;t be too difficult, but it took me a few minutes to install hugo (longest part was adding homebrew) and I don&rsquo;t want to have to go through that again if I&rsquo;m on a different computer etc. So having been impressed recently with a dockerised build for <a href="https://github.com/metacontroller/metacontroller">metacontroller</a> (a project that I use in work), I thought it&rsquo;d be interesting to see how much effort there&rsquo;d be in dockerising the hugo install. I have to say, there was <strong>fuck all</strong> to getting this working. There&rsquo;s now a single bash script in the repository which contains the actual Markdown, and that uses a docker image which exists already on docker hub. So testing local edits is now as simple as running the below:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --rm -it -v <span style="color:#66d9ef">$(</span>pwd<span style="color:#66d9ef">)</span>:/src -p 1313:1313 klakegg/hugo:0.76.5 server
-</code></pre></div><p>So really impressed with the ease with which it was possible to set this up. Hopefully no concerns about not being able to quickly and easily add content to the blog in future. And dockerising the build environment is definitely something I&rsquo;m going to look at doing in future for larger projects.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run --rm -it -v <span style="color:#66d9ef">$(</span>pwd<span style="color:#66d9ef">)</span>:/src -p 1313:1313 klakegg/hugo:0.76.5 server
+</span></span></code></pre></div><p>So really impressed with the ease with which it was possible to set this up. Hopefully no concerns about not being able to quickly and easily add content to the blog in future. And dockerising the build environment is definitely something I&rsquo;m going to look at doing in future for larger projects.</p>
 <!-- raw HTML omitted -->
 
               
@@ -355,7 +355,7 @@ if (!doNotTrack) {
         </article>
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
-    &copy; 2021 Brian Mooney. All Rights Reserved
+    &copy; 2023 Brian Mooney. All Rights Reserved
   </span>
 </footer>
 
